@@ -87,7 +87,7 @@ class _NewExpenseState extends State<NewExpense>{
       _isSending=true;
     });
     final url = Uri.https(
-      'flutter-proj-5756e-default-rtdb.europe-west1.firebasedatabase.app',
+      '',      //add the url to firebase
       'expense-tracker.json',
     );
     final response = await http.post(url, headers: {
