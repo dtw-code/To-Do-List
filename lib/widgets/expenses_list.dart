@@ -20,6 +20,10 @@ class ExpenseList extends StatelessWidget{
         return Dismissible(   //this will help in swipe to delete
           key:ValueKey(expenses[index].id),//unique identifieer to delete elements, here we are using indx of each expense
 
+          dismissThresholds: {
+            DismissDirection.endToStart: 0.9,   // 70% swipe required to activate deletion
+          },
+
           background: Container(
             color: Theme.of(context).colorScheme.error.withOpacity(0.60),
             margin: EdgeInsets.fromLTRB(16, 8, 16, 6),

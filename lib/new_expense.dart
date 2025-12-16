@@ -4,10 +4,12 @@ import 'dart:io';   //to check for platform
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class NewExpense extends StatefulWidget{
-  const NewExpense({super.key,required this.addExpense});
-  final void Function(Expense expense) addExpense;
+  const NewExpense({super.key});
+
   @override
   State<NewExpense> createState() {
     return _NewExpenseState();
@@ -20,6 +22,7 @@ class _NewExpenseState extends State<NewExpense>{
   final _amountcontroller=TextEditingController();
   DateTime? _selectedDate;  //initially set to null which is why '?' sign is used
   Category _selectedcategory=Category.leisure;
+  var _isSending=false;
 
   void _presentdatepicker() async{   //used to manage date from calendar icon
     final now=DateTime.now();
@@ -71,21 +74,58 @@ class _NewExpenseState extends State<NewExpense>{
     }//it is like a popup
   }
 
-  void _submitExpenseData() {
+  Future<void> _submitExpenseData() async{
     final enteredAmount=double.tryParse(_amountcontroller.text);  //tryparse('hello')=>null or tryparse('123')=>123
     final amountIsInvalid=enteredAmount==null || enteredAmount<=0;
     if(_titlecontroller.text.trim().isEmpty || amountIsInvalid || _selectedDate==null) { //.trim is used to remove and leading or trailing spaces
     _showDialog();
     return;
     }
-      //else condition
-      widget.addExpense(Expense(
-      title: _titlecontroller.text,
+
+  try {
+    setState(() {
+      _isSending=true;
+    });
+    final url = Uri.https(
+      'flutter-proj-5756e-default-rtdb.europe-west1.firebasedatabase.app',
+      'expense-tracker.json',
+    );
+    final response = await http.post(url, headers: {
+      'Content-Type': 'application/json'
+    }, body: json.encode({
+      'title': _titlecontroller.text,
+      'amount': enteredAmount,
+      'date': _selectedDate!.toIso8601String(),
+      'category': _selectedcategory.name,
+    }));
+    final Map<String, dynamic> expenseData = json.decode(response.body);
+    // widget.addExpense(Expense(
+    //     id: expenseData['name'],
+    //     title: _titlecontroller.text,
+    //     amount: enteredAmount,
+    //     date: _selectedDate!,
+    //     category: _selectedcategory
+    // ));
+    final created = Expense(
+      id: expenseData['name'],
+      title: _titlecontroller.text.trim(),
       amount: enteredAmount,
       date: _selectedDate!,
-      category: _selectedcategory
-  ));
-  Navigator.pop(context);  //removes the overlay
+      category: _selectedcategory,
+    );
+
+    if (!mounted) return;
+
+    Navigator.pop(context,created); //removes the overlay
+  }
+
+    //else condition
+
+    catch(error){
+
+    _showDialog();
+  }
+
   }
 
 
@@ -156,15 +196,15 @@ class _NewExpenseState extends State<NewExpense>{
                         });
                       }),
                   const Spacer(),   //flexible sized gap. SizedBox is a fixed size gap
-                  TextButton(onPressed: (){
+                  TextButton(onPressed: _isSending?null: (){
                     Navigator.pop(context);   //removes the overlay
                   },
-                      child: Text('Cancel')
+                      child: _isSending?SizedBox(width:16 ,height:16 ,child:CircularProgressIndicator()):Text('Cancel')
                   ),
 
 
-                 ElevatedButton(onPressed:_submitExpenseData,
-                     child: Text('Save Expense')
+                 ElevatedButton(onPressed:_isSending?null:_submitExpenseData,
+                     child:Text('Save Expense')
                  )
               ]
               ),

@@ -19,6 +19,7 @@ void main() {
 
     runApp(
       MaterialApp(
+        debugShowCheckedModeBanner: false,
         darkTheme: ThemeData.dark().copyWith(
           colorScheme: kDarkColorScheme,
           cardTheme: CardThemeData().copyWith(
@@ -59,7 +60,7 @@ void main() {
           // ),
         ),
 
-        themeMode: ThemeMode.light, // default to dark mode
+        themeMode: ThemeMode.dark, // default to dark mode
         home: Expenses(),
       ),
     );

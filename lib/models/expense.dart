@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart'; //for uuid
 import 'package:intl/intl.dart'; //for date formatting'
 final uuid=Uuid();
-final formatter=DateFormat.yMd();
+final formatter = DateFormat('dd/MM/yy');
 enum Category{food,travel,leisure,work}
 const categoryicons={  //like a map (key:value) pairs used for icon selection
   Category.food:Icons.lunch_dining,
@@ -16,8 +16,9 @@ class Expense{
   {required this.title,
   required this.amount,
   required this.date,
-  required this.category
-  }):id=uuid.v4();
+  required this.category,
+    required this.id
+   })  ;    //:id=uuid.v4(); attaching this will give automatic uid
 
 
   final String title;
