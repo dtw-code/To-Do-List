@@ -47,7 +47,7 @@ void initState(){
 
   Future<void> _loadExpenses() async {
     final url = Uri.https(
-      'flutter-proj-5756e-default-rtdb.europe-west1.firebasedatabase.app',
+      '',      //add firebase url key
       'expense-tracker.json',
     );
     final response = await http.get(url);
@@ -84,7 +84,7 @@ void initState(){
   void removeExpense(Expense expense) async{        //used to remove expense from registered expense while sliding
     final expenseIndex=_registeredExpense.indexOf(expense);
     final url = Uri.https(
-      'flutter-proj-5756e-default-rtdb.europe-west1.firebasedatabase.app',
+      '',    //add firebase url key
       'expense-tracker/${expense.id}.json',    //this helps in deleting the particular id
     );
     final response =await http.delete(url);
@@ -112,7 +112,7 @@ void initState(){
                 _total=_registeredExpense.fold(0, (sum, item) => sum + item.amount);
               });
               final putUrl = Uri.https(
-                'flutter-proj-5756e-default-rtdb.europe-west1.firebasedatabase.app',
+                '',    //add your firebase url key
                 'expense-tracker/${expense.id}.json',
               );
               try {
